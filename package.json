@@ -1,0 +1,16 @@
+{
+  "name": "taste-vault",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An identity studio for your next AI employee.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "npm run check",
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "check": "node --check dist/app.js && node --check dist/identity.js && node --test tests/*.test.mjs"
+  }
+}
