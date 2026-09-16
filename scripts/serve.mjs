@@ -9,6 +9,8 @@ const mime = {
   ".css": "text/css; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".ttf": "font/ttf",
   ".woff2": "font/woff2",
   ".json": "application/json; charset=utf-8",
 };
@@ -40,5 +42,5 @@ createServer(async (req, res) => {
     res.end("Not found");
   }
 }).listen(port, "127.0.0.1", () =>
-  console.log(`Taste Vault is ready at http://localhost:${port}`),
+  console.log(`Identity Studio is ready at http://localhost:${port}`),
 );

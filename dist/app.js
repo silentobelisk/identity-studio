@@ -41,6 +41,7 @@ const creatorUI = {
   locks: new Set(),
 };
 
+// Retain the original key so the Identity Studio rename keeps existing drafts.
 const STORAGE_KEY = "taste-vault.identity.v1";
 const $ = (selector) => document.querySelector(selector);
 const escapeHTML = (value) =>
@@ -133,7 +134,7 @@ function renderPreview() {
   }
   const name = escapeHTML(state.name || "Your teammate");
   $("#employee-preview").innerHTML =
-    `<article class="identity-card" style="--card-accent:${state.accent}"><div class="card-top"><span>TEAM MEMBER<br><strong>IDENTITY CARD</strong></span><span class="card-emblem" aria-hidden="true">✳</span></div><div class="card-portrait">${avatarMarkup()}</div><div class="card-info"><span class="card-hello">HELLO, I’M</span><h2>${name}<span class="name-dot">.</span></h2><p>${escapeHTML(state.role || "Your next AI employee")}</p></div><div class="card-traits">${
+    `<article class="identity-card" style="--card-accent:${state.accent}"><div class="card-top"><span>TEAM MEMBER<br><strong>IDENTITY CARD</strong></span><img class="card-emblem" src="/assets/ai-employee-lab.jpg" alt="" width="32" height="32" /></div><div class="card-portrait">${avatarMarkup()}</div><div class="card-info"><span class="card-hello">HELLO, I’M</span><h2>${name}<span class="name-dot">.</span></h2><p>${escapeHTML(state.role || "Your next AI employee")}</p></div><div class="card-traits">${
       state.traits
         .slice(0, 3)
         .map((t) => `<span>${escapeHTML(t)}</span>`)
@@ -442,7 +443,7 @@ async function importIdentity(file) {
       typeof data.name !== "string" ||
       typeof data.role !== "string"
     )
-      throw new Error("That isn’t a supported Taste Vault identity file.");
+      throw new Error("That isn’t a supported Identity Studio identity file.");
     state = normalizeIdentity(data);
     appearanceHistory.clear();
     creatorUI.selectedPart = -1;
@@ -453,7 +454,7 @@ async function importIdentity(file) {
   } catch (error) {
     toast(
       error instanceof SyntaxError
-        ? "That file isn’t valid JSON. Choose identity.json from a Taste Vault kit."
+        ? "That file isn’t valid JSON. Choose identity.json from an Identity Studio kit."
         : error.message,
     );
   }
@@ -572,7 +573,7 @@ if (context?.registerTool) {
     name: "configure_employee_identity",
     title: "Configure employee identity",
     description:
-      "Update the identity draft in Taste Vault and show the review step. Does not download files or set up employee workflows.",
+      "Update the identity draft in Identity Studio and show the review step. Does not download files or set up employee workflows.",
     inputSchema: {
       type: "object",
       properties: {
@@ -974,7 +975,7 @@ async function exportAvatar(kind) {
 async function importDesign(file) {
   if (!file) return;
   if (file.size > 250000) {
-    toast("Choose a Taste Vault avatar design smaller than 250 KB.");
+    toast("Choose an Identity Studio avatar design smaller than 250 KB.");
     return;
   }
   try {
@@ -987,7 +988,7 @@ async function importDesign(file) {
       Array.isArray(value.design)
     )
       throw new Error(
-        "Choose an avatar-design.json or .avatar.json exported by Taste Vault.",
+        "Choose an avatar-design.json or .avatar.json exported by Identity Studio.",
       );
     beginAppearance();
     state.avatarDesign = normalizeAvatar(value.design);

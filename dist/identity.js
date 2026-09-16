@@ -57,6 +57,7 @@ export const TRAITS = [
   "Candid",
 ];
 export const ACCENTS = [
+  { name: "Lab rose", color: "#f7c6d0" },
   { name: "Citron", color: "#d7ed78" },
   { name: "Periwinkle", color: "#bdc9f2" },
   { name: "Apricot", color: "#f5c5a5" },
@@ -71,7 +72,7 @@ export const DEFAULT_IDENTITY = {
   step: 0,
   collection: "characters",
   avatar: 0,
-  accent: "#d7ed78",
+  accent: "#f7c6d0",
   customAvatar: "",
   name: "Milo",
   role: "Creative partner",
@@ -226,7 +227,7 @@ export function createKitFiles(input) {
         : `${d.collection}/${d.avatar}`;
   const traitText = d.traits.join(", ");
   const files = {
-    "START-HERE.md": `# Meet ${d.name}\n\nYour AI employee’s identity kit, made with Taste Vault.\n\n## What’s inside\n\n- IDENTITY.md — name, role, and personality\n- BRAIN.md — purpose, working context, principles, and boundaries\n- VOICE.md — tone and a sample introduction\n- avatar.png — a 512 × 512 profile picture\n- avatar-prompt.md — a prompt for future visual variations\n- identity.json — a portable profile (reimport into Taste Vault to keep editing)\n\n## Your next step\n\nGive these files to the coding agent or builder you use for your AI employee. Start with: “Read this identity kit and use it as the foundation for my AI employee. Ask me about its responsibilities and workflows before implementing anything.”\n\nThis kit defines identity and preferences. It does not configure tools, memory, permissions, autonomous actions, or integrations. BRAIN.md is written guidance, not an executable agent or enforcement layer.\n\nYour uploaded images remain subject to their existing rights. Built-in avatars are original AI-generated artwork.\n`,
+    "START-HERE.md": `# Meet ${d.name}\n\nYour AI employee’s identity kit, made with Identity Studio.\n\n## What’s inside\n\n- IDENTITY.md — name, role, and personality\n- BRAIN.md — purpose, working context, principles, and boundaries\n- VOICE.md — tone and a sample introduction\n- avatar.png — a 512 × 512 profile picture\n- avatar-prompt.md — a prompt for future visual variations\n- identity.json — a portable profile (reimport into Identity Studio to keep editing)\n\n## Your next step\n\nGive these files to the coding agent or builder you use for your AI employee. Start with: “Read this identity kit and use it as the foundation for my AI employee. Ask me about its responsibilities and workflows before implementing anything.”\n\nThis kit defines identity and preferences. It does not configure tools, memory, permissions, autonomous actions, or integrations. BRAIN.md is written guidance, not an executable agent or enforcement layer.\n\nYour uploaded images remain subject to their existing rights. Built-in avatars are original AI-generated artwork.\n`,
     "IDENTITY.md": `# ${d.name}\n\n**Role:** ${d.role}\n**Pronouns:** ${d.pronouns || "Not specified"}\n**Personality:** ${traitText}\n**Accent color:** ${d.accent}\n**Profile picture:** avatar.png\n\n## Purpose\n\n${d.purpose}\n\nAn AI teammate with a consistent identity. Never imply that this persona is a human or claim real-world experiences it does not have.\n`,
     "BRAIN.md": `# ${d.name} — working identity\n\n## Purpose\n\n${d.purpose}\n\n## Who I work with\n\n${d.audience || "Ask the user about their team and context."}\n\n## How I approach work\n\n${lines(d.principles) || "- Ask the user how they prefer to work."}\n\n## Boundaries\n\n${lines(d.boundaries) || "- Clarify permissions before taking consequential actions."}\n\n## Personality\n\n${traitText}. ${voiceDescription(d)}.\n\n## Before the build\n\nThis file provides persona guidance only. Confirm the actual responsibilities, data access, approval rules, tools, and success criteria separately. It does not grant permissions or enforce controls.\n`,
     "VOICE.md": `# ${d.name} — voice\n\n${voiceDescription(d)}.\n\n- Warmth: ${d.warmth}/100 (composed → conversational)\n- Detail: ${d.detail}/100 (concise → thorough)\n- Energy: ${d.energy}/100 (calm → expressive)\n\n## Example introduction\n\n${voiceSample(d)}\n\nThis is a template-based tone illustration, not a generated conversation or a guarantee of model behavior.\n`,
@@ -251,7 +252,7 @@ export function createKitFiles(input) {
     );
   if (d.avatarMode === "builder")
     files["START-HERE.md"] +=
-      "\n## Keep creating\n\n- avatar.svg — scalable artwork matching the exported PNG\n- avatar-design.json — open with “Open a design” in Taste Vault to edit every shape, color, and facial feature\n\nThe full identity.json also preserves this construction.\n";
+      "\n## Keep creating\n\n- avatar.svg — scalable artwork matching the exported PNG\n- avatar-design.json — open with “Open a design” in Identity Studio to edit every shape, color, and facial feature\n\nThe full identity.json also preserves this construction.\n";
   return files;
 }
 // ZIP uses STORE entries: small, dependency-free, and readable by standard unzip tools.

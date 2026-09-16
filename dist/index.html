@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f7f3" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
-      content="Give your AI employee a name, a face, and a point of view. A little identity studio for your next teammate."
+      content="Create a custom avatar, name, personality, and brain for your AI employee. Identity Studio by AI Employee Lab."
     />
-    <title>Taste Vault — An identity studio for AI employees</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <title>Identity Studio — AI Employee Lab</title>
+    <link rel="icon" type="image/jpeg" href="/assets/ai-employee-lab.jpg" />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/avatar-editor.css" />
     <script type="module" src="/app.js"></script>
@@ -17,28 +17,31 @@
   <body>
     <a class="skip-link" href="#workspace">Skip to the studio</a>
     <header class="topbar">
-      <a class="wordmark" href="/" aria-label="Taste Vault home"
-        ><span class="brand-mark" aria-hidden="true">t<span>v</span></span
-        >taste vault<span class="wordmark-period" aria-hidden="true"
-          >✳</span
-        ></a
-      >
-      <span class="topbar-description"
-        >A little identity. A lot of possibility.</span
-      >
+      <a class="wordmark" href="/" aria-label="Identity Studio home">
+        <img
+          class="brand-mark"
+          src="/assets/ai-employee-lab.jpg"
+          width="44"
+          height="44"
+          alt=""
+        />
+        <span class="brand-lockup"
+          ><span class="brand-parent">AI EMPLOYEE LAB</span
+          ><span class="brand-title">Identity Studio</span></span
+        >
+      </a>
+      <span class="topbar-description">BUILD YOUR NEXT TEAMMATE.</span>
       <button class="quiet-button" id="reset-button">
         Start fresh <span aria-hidden="true">↗</span>
       </button>
     </header>
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="eyebrow">THE IDENTITY STUDIO</div>
+        <div class="eyebrow">YOUR EMPLOYEE IDENTITY</div>
         <nav id="step-nav" aria-label="Identity steps"></nav>
         <div class="sidebar-bottom">
-          <div class="mini-avatars" aria-hidden="true">
-            <span>m.</span><span>a.</span><span>n.</span>
-          </div>
-          <p>Every great teammate<br />starts with a little character.</p>
+          <div class="lab-signature">MADE IN THE LAB.</div>
+          <p>Your ideas.<br />Your employee.<br />Your way.</p>
           <a class="text-link" href="#" id="about-link"
             >About this step <span aria-hidden="true">↗</span></a
           >
@@ -46,7 +49,7 @@
       </aside>
       <main id="workspace" tabindex="-1">
         <div class="workspace-meta">
-          <span>YOUR NEXT TEAMMATE, REIMAGINED</span
+          <span>AI EMPLOYEE LAB / IDENTITY STUDIO</span
           ><span id="save-status" role="status">Saved on this device</span>
         </div>
         <div class="studio-columns">
@@ -67,8 +70,8 @@
           </aside>
         </div>
         <footer class="studio-footer">
-          <span>Made for the team you’re about to build.</span
-          ><span>IDENTITY FIRST. POSSIBILITIES NEXT.</span>
+          <span>Identity Studio · AI Employee Lab</span
+          ><span>BUILD SOMETHING THAT’S YOURS.</span>
         </footer>
       </main>
     </div>
@@ -111,8 +114,8 @@
     </dialog>
     <noscript
       ><p class="noscript">
-        Taste Vault needs JavaScript to build your identity. Enable JavaScript,
-        then reload this page.
+        Identity Studio needs JavaScript to build your identity. Enable
+        JavaScript, then reload this page.
       </p></noscript
     >
   </body>

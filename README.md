@@ -1,8 +1,8 @@
-# Taste Vault
+# Identity Studio
 
-**Give your AI employee a name, a face, and a point of view.**
+**An AI Employee Lab studio for giving your employee a name, a face, and a point of view.**
 
-Taste Vault is an identity studio for the AI employee you’ve already decided to build. Create an original avatar from editable shapes, make an introduction, shape a personality, and download a complete identity kit.
+Identity Studio helps you shape the AI employee you’ve already decided to build. Create an original avatar from editable shapes, make an introduction, shape a personality, and download a complete identity kit.
 
 This is the groundwork before the build. It defines identity and preferences; it does not set up workflows, tools, integrations, or autonomous behavior.
 
@@ -70,7 +70,7 @@ Give the kit to your AI employee’s project or coding agent. For example:
 
 To resume an earlier identity, open **The identity kit → Import identity.json**. Import replaces the current browser draft. Download the current kit first if you want to keep both. Uploaded avatars are embedded in the JSON so they survive a round trip.
 
-SVG and avatar-design files are included for characters built in the studio. Uploaded pictures and first-edition gallery projects retain their image-based exports. Older identity files remain importable.
+SVG and avatar-design files are included for characters built in the studio. Uploaded pictures and first-edition gallery projects retain their image-based exports. Older identity files remain importable. Identity Studio retains the original draft-storage key and saved-design format identifiers for compatibility. The GitHub repository keeps its existing URL.
 
 ## Your data
 
@@ -101,7 +101,7 @@ dist/                  Authored static site, checked into Git
   avatar-editor.js     Canvas handles and customization controls
   avatar-editor.css    Avatar studio layout and controls
   styles.css           Responsive visual system
-  assets/              Legacy avatars, fonts, favicon
+  assets/              Community logo, local fonts, legacy avatars
 scripts/serve.mjs      Small dependency-free local server
 tests/                 Identity/export and asset checks
 docs/                  Design notes and font licenses
@@ -117,6 +117,6 @@ An optional, feature-detected WebMCP tool can configure a draft in supported age
 
 ## Design and credits
 
-Taste Vault pairs editorial typography and a quiet workspace with a collectible employee ID card. See [design notes and references](docs/DESIGN.md).
+Identity Studio follows AI Employee Lab’s classroom design: condensed headlines, white surfaces, pink-red accents, and the lab logo. See [design notes and references](docs/DESIGN.md).
 
-Code is licensed under MIT. Bundled fonts, DM Sans and Instrument Serif, use the SIL Open Font License; license files are in `docs/`. No source code or artwork from Bible Strong Avatar Lab is included.
+Code is licensed under MIT. Bundled fonts, Anton, DM Sans, and the legacy Instrument Serif files, use the SIL Open Font License; license files are in `docs/`. The AI Employee Lab logo is a brand asset from the community; the MIT license covers the code, not rights to the brand. No source code or artwork from Bible Strong Avatar Lab is included.

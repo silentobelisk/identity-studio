@@ -19,6 +19,10 @@ In desktop Chrome, verified adding a body piece, moving it with arrow keys, and 
 
 A separate source review found no remaining blockers in editor state handling, normalized designs, or PNG/SVG export paths. Existing import, upload, escaping, and reset handling were also reviewed during the first build.
 
+## Branding update
+
+Identity Studio uses the community logo and a bundled Anton font. The original storage key and avatar-design type are retained to preserve existing drafts and imports. The established 17-test suite remains the regression check for this visual update.
+
 ## Limits
 
 Full cross-browser, screen-reader, mobile-device, and 200% zoom testing has not been performed. The optional WebMCP registration and execution require a supported browser context and have not been verified. That capability does not affect the standard UI.
