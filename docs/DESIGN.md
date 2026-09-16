@@ -5,17 +5,19 @@ An editorial workshop for making an AI employee feel like a familiar teammate. T
 - **Signature object:** a gently tilted, color-customizable employee ID card that reflects every choice.
 - **Palette:** warm paper, ink, olive, and a crisp citron accent. The user can change the identity card accent without changing the interface.
 - **Typography:** Instrument Serif for expressive moments, DM Sans for controls. Font files are bundled so the app runs without a CDN.
-- **Avatars:** 12 original generated assets in three 2×2 sprite sheets. Characters favor simple silhouettes and expressive eyes. Objects provide a more abstract identity. Portraits offer fictional adult faces.
+- **Avatar studio:** a dark drawing surface with a dedicated inspector. Original procedural SVG creates the artwork from editable data. Members can combine shapes, sculpt a contour, build extra pieces, and adjust facial features independently.
+- **Customization:** body, face, style, and details have their own controls. Expression shortcuts and shape choices are starting points, with continuous size, position, rotation, and color controls. Locked exploration preserves selected design groups.
+- **Portability:** preview, SVG, and raster export share one renderer. Both the standalone avatar design and the full identity profile retain the construction, so exports can be reopened and edited.
 - **Motion:** a short arrival transition; reduced-motion preferences are respected.
 - **Flow:** appearance → name → personality and voice → brain → portable identity kit.
 
 ## References
 
 - Kyle’s brief: OpenAI desktop subagent icons, Grokbot, and simple AI teammate identities.
-- [Bible Strong Avatar Lab](https://avatars.bible-strong.app) and its [repository](https://github.com/smontlouis/bible-strong-avatar-lab): reviewed the local reference and character ensemble. Transferable ideas were clear silhouettes, minimal expressive faces, and a consistent employee color. Its bundled document includes an avatar named “Grok bot.” No source or artwork was copied.
+- [Bible Strong Avatar Lab](https://avatars.bible-strong.app) and its [repository](https://github.com/smontlouis/bible-strong-avatar-lab): reviewed the local editor, data model, rendering, and interaction design. The important lesson was authoring a character through independently adjustable geometry and facial features. Taste Vault applies that approach with its own 2D SVG renderer, body pieces, contour sculpting, and independent eyes. No source or artwork was copied; this is not a port of its 3D controls or animation system.
 - [Clay robot imagery on Pinterest](https://ro.pinterest.com/dianakovacs7330/clay-robots/): discovery reference for tactile character direction, not a source for shipped artwork.
 
-The avatar sheets were generated specifically for this project. Prompt briefs are preserved in [avatar-prompts.json](avatar-prompts.json). Their transparent backgrounds let the same asset work on the selection tiles, employee card, small workspace badge, and exported profile picture.
+The first-edition avatar sheets were generated specifically for this project. Their prompt briefs are preserved in [avatar-prompts.json](avatar-prompts.json). Those sheets remain only to preserve earlier identity files; the main studio now creates characters from editable data.
 
 ## Product boundary
 

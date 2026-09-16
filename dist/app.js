@@ -14,6 +14,33 @@ import {
   zipFiles,
 } from "./identity.js";
 
+import {
+  normalizeAvatar,
+  avatarDataURL,
+  renderAvatarSVG,
+  randomizeAvatar,
+  applyExpression,
+  AppearanceHistory,
+  isHexColor,
+} from "./avatar.js";
+import {
+  renderBuilderStage,
+  renderInspector,
+  renderHandles,
+  stageHint,
+  getPath,
+  setPath,
+} from "./avatar-editor.js";
+
+const appearanceHistory = new AppearanceHistory();
+const creatorUI = {
+  panel: "body",
+  selectedPart: -1,
+  eyeSide: "leftEye",
+  linkEyes: false,
+  locks: new Set(),
+};
+
 const STORAGE_KEY = "taste-vault.identity.v1";
 const $ = (selector) => document.querySelector(selector);
 const escapeHTML = (value) =>
@@ -78,14 +105,12 @@ function toast(message) {
   $("#toast").classList.add("visible");
   toastTimer = setTimeout(() => $("#toast").classList.remove("visible"), 4500);
 }
-function avatarMarkup(
-  collection = state.collection,
-  index = state.avatar,
-  custom = state.customAvatar,
-) {
-  if (custom)
-    return `<span class="avatar-image custom-avatar" style="background-image:url('${escapeHTML(custom)}')" role="img" aria-label="Your uploaded avatar"></span>`;
-  return `<span class="avatar-image" style="background-image:url('/assets/${collection}.png');background-position:${index % 2 ? "100%" : "0%"} ${index > 1 ? "100%" : "0%"}" role="img" aria-label="${escapeHTML(COLLECTIONS[collection].names[index])} avatar"></span>`;
+function avatarMarkup() {
+  if (state.avatarMode === "builder")
+    return `<img class="procedural-avatar" src="${escapeHTML(avatarDataURL(state.avatarDesign))}" alt="Your custom avatar" />`;
+  if (state.avatarMode === "upload")
+    return `<span class="avatar-image custom-avatar" style="background-image:url('${escapeHTML(state.customAvatar)}')" role="img" aria-label="Your uploaded avatar"></span>`;
+  return `<span class="avatar-image" style="background-image:url('/assets/${state.collection}.png');background-position:${state.avatar % 2 ? "100%" : "0%"} ${state.avatar > 1 ? "100%" : "0%"}" role="img" aria-label="Your earlier saved avatar"></span>`;
 }
 function heading(kicker, title, subtitle) {
   return `<div class="step-heading"><div class="eyebrow">${kicker}</div><h1 id="step-title" tabindex="-1">${title}</h1><p>${subtitle}</p></div>`;
@@ -99,6 +124,13 @@ function renderNavigation() {
     .join("");
 }
 function renderPreview() {
+  document.querySelector(".preview-label > span:first-child").textContent =
+    state.step === 0 ? "MAKE IT YOURS" : "THE FIRST IMPRESSION";
+  document.querySelector(".preview-footnote").hidden = state.step === 0;
+  if (state.step === 0) {
+    $("#employee-preview").innerHTML = renderInspector(state, creatorUI);
+    return;
+  }
   const name = escapeHTML(state.name || "Your teammate");
   $("#employee-preview").innerHTML =
     `<article class="identity-card" style="--card-accent:${state.accent}"><div class="card-top"><span>TEAM MEMBER<br><strong>IDENTITY CARD</strong></span><span class="card-emblem" aria-hidden="true">✳</span></div><div class="card-portrait">${avatarMarkup()}</div><div class="card-info"><span class="card-hello">HELLO, I’M</span><h2>${name}<span class="name-dot">.</span></h2><p>${escapeHTML(state.role || "Your next AI employee")}</p></div><div class="card-traits">${
@@ -109,23 +141,12 @@ function renderPreview() {
     }</div><div class="card-bottom"><span>AI EMPLOYEE</span><span>EST. ${new Date().getFullYear()}</span><span class="barcode" aria-hidden="true"></span></div></article><div class="in-the-wild"><div class="tiny-avatar" style="background:${state.accent}">${avatarMarkup()}</div><div><strong>${name} <span>in your workspace</span></strong><p>${escapeHTML(state.role || "Your next AI employee")} · AI teammate</p></div><span class="workspace-star" aria-hidden="true">✧</span></div>`;
 }
 function renderLook() {
-  const collection = COLLECTIONS[state.collection];
   return (
     heading(
-      "01 / THE LOOK",
-      "A face you’ll<br><em>look forward to.</em>",
-      "Pick a little character for your next big idea.",
-    ) +
-    `<div class="collection-tabs" role="group" aria-label="Avatar collection">${Object.entries(
-      COLLECTIONS,
-    )
-      .map(
-        ([id, c]) =>
-          `<button data-collection="${id}" aria-pressed="${state.collection === id}" class="${state.collection === id ? "selected" : ""}">${c.label}<span>04</span></button>`,
-      )
-      .join(
-        "",
-      )}</div><div class="collection-caption"><p>${collection.note}</p><button class="icon-button" data-action="surprise" aria-label="Choose a different avatar" title="Surprise me">${icon("shuffle")}</button></div><div class="avatar-grid">${collection.names.map((name, i) => `<button class="avatar-option ${state.avatar === i && !state.customAvatar ? "selected" : ""}" data-avatar="${i}" aria-pressed="${state.avatar === i && !state.customAvatar}" aria-label="Choose ${escapeHTML(name)}"><span class="avatar-art">${avatarMarkup(state.collection, i, "")}</span><span class="avatar-caption"><span><strong>${name}</strong><small>${collection.descriptions[i]}</small></span><span class="selection-check">${icon("check")}</span></span></button>`).join("")}</div><div class="custom-row"><span>Already have a face in mind?</span><button class="text-link" data-action="upload">${icon("upload")} Upload your own</button><input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp" hidden /></div>${state.customAvatar ? `<div class="upload-notice">Your uploaded avatar is selected.<button class="text-link" data-action="remove-upload">Use a collection avatar</button></div>` : ""}<div class="accent-row"><span>Make it your color</span><div class="color-options" role="group" aria-label="Identity card color">${ACCENTS.map((a) => `<button class="color-swatch ${state.accent === a.color ? "selected" : ""}" style="--swatch:${a.color}" data-accent="${a.color}" aria-label="${a.name}" aria-pressed="${state.accent === a.color}" title="${a.name}">${state.accent === a.color ? icon("check") : ""}</button>`).join("")}</div></div>`
+      "01 / THE AVATAR STUDIO",
+      "Create <em>your character.</em>",
+      "Build their shape. Find their expression. Make every detail yours.",
+    ) + renderBuilderStage(state, creatorUI, appearanceHistory)
   );
 }
 function field(key, label, hint, multiline = false, rows = 3) {
@@ -169,7 +190,16 @@ function renderKit() {
     ["IDENTITY.md", "Their name, role, and personality"],
     ["BRAIN.md", "Purpose, principles, and boundaries"],
     ["VOICE.md", "A voice that feels familiar"],
-    ["avatar.png", "A 512 × 512 profile picture"],
+    [
+      "avatar.png",
+      `A ${state.avatarResolution} × ${state.avatarResolution} profile picture`,
+    ],
+    ...(state.avatarMode === "builder"
+      ? [
+          ["avatar.svg", "Scalable artwork"],
+          ["avatar-design.json", "Your editable shapes, face, and colors"],
+        ]
+      : []),
     ["avatar-prompt.md", "Keep their future look consistent"],
     ["identity.json", "An editable, portable profile"],
     ["START-HERE.md", "A little guidance for the next step"],
@@ -184,6 +214,7 @@ function renderKit() {
   );
 }
 function renderStep() {
+  document.body.classList.toggle("creator-open", state.step === 0);
   $("#step-content").innerHTML = [
     renderLook,
     renderName,
@@ -248,16 +279,25 @@ async function loadImage(src) {
 }
 async function avatarBlob(identity) {
   const img = await loadImage(
-    identity.customAvatar || `/assets/${identity.collection}.png`,
+    identity.avatarMode === "builder"
+      ? avatarDataURL(identity.avatarDesign, {
+          size: identity.avatarResolution,
+        })
+      : identity.avatarMode === "upload"
+        ? identity.customAvatar
+        : `/assets/${identity.collection}.png`,
   );
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 512;
+  const resolution = identity.avatarResolution;
+  canvas.width = canvas.height = resolution;
   const ctx = canvas.getContext("2d");
   if (!ctx)
     throw new Error("Your browser could not create the profile picture.");
-  ctx.fillStyle = identity.accent;
-  ctx.fillRect(0, 0, 512, 512);
-  if (identity.customAvatar) {
+  if (identity.avatarMode === "legacy") {
+    ctx.fillStyle = identity.accent;
+    ctx.fillRect(0, 0, resolution, resolution);
+  }
+  if (identity.avatarMode !== "legacy") {
     const side = Math.min(img.naturalWidth, img.naturalHeight);
     ctx.drawImage(
       img,
@@ -267,8 +307,8 @@ async function avatarBlob(identity) {
       side,
       0,
       0,
-      512,
-      512,
+      resolution,
+      resolution,
     );
   } else {
     const width = img.naturalWidth / 2,
@@ -281,8 +321,8 @@ async function avatarBlob(identity) {
       height,
       0,
       0,
-      512,
-      512,
+      resolution,
+      resolution,
     );
   }
   return new Promise((resolve, reject) =>
@@ -372,7 +412,10 @@ async function uploadAvatar(file) {
       throw new Error(
         "This image is too complex to save. Try a smaller image.",
       );
+    beginAppearance();
     state.customAvatar = processedAvatar;
+    state.avatarMode = "upload";
+    finishAppearance();
     save();
     renderStep();
     renderPreview();
@@ -395,12 +438,14 @@ async function importIdentity(file) {
     const data = JSON.parse(await file.text());
     if (
       !data ||
-      data.version !== 1 ||
+      ![1, 2].includes(data.version) ||
       typeof data.name !== "string" ||
       typeof data.role !== "string"
     )
       throw new Error("That isn’t a supported Taste Vault identity file.");
     state = normalizeIdentity(data);
+    appearanceHistory.clear();
+    creatorUI.selectedPart = -1;
     state.step = 4;
     save();
     render();
@@ -416,24 +461,9 @@ async function importIdentity(file) {
 document.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button) return;
+  if (handleCreatorClick(button)) return;
   if (button.hasAttribute("data-step"))
     return goToStep(Number(button.dataset.step));
-  if (button.dataset.collection) {
-    state.collection = button.dataset.collection;
-    rerenderKeepingFocus(`[data-collection="${state.collection}"]`);
-    return;
-  }
-  if (button.hasAttribute("data-avatar")) {
-    state.avatar = Number(button.dataset.avatar);
-    state.customAvatar = "";
-    rerenderKeepingFocus(`[data-avatar="${state.avatar}"]`);
-    return;
-  }
-  if (button.dataset.accent) {
-    state.accent = button.dataset.accent;
-    rerenderKeepingFocus(`[data-accent="${state.accent}"]`);
-    return;
-  }
   if (button.dataset.name) {
     state.name = button.dataset.name;
     rerenderKeepingFocus(`[data-name="${state.name}"]`);
@@ -458,17 +488,8 @@ document.addEventListener("click", (event) => {
     case "back":
       goToStep(state.step - 1);
       break;
-    case "surprise":
-      state.avatar = (state.avatar + 1 + Math.floor(Math.random() * 3)) % 4;
-      state.customAvatar = "";
-      rerenderKeepingFocus('[data-action="surprise"]');
-      break;
     case "upload":
       $("#avatar-upload").click();
-      break;
-    case "remove-upload":
-      state.customAvatar = "";
-      rerenderKeepingFocus('[data-action="upload"]');
       break;
     case "download":
       void downloadKit();
@@ -492,6 +513,7 @@ document.addEventListener("click", (event) => {
   }
 });
 document.addEventListener("input", (event) => {
+  if (handleCreatorInput(event.target)) return;
   const { id, value } = event.target;
   if (Object.hasOwn(FIELD_LIMITS, id)) {
     state[id] = value.slice(0, FIELD_LIMITS[id]);
@@ -507,6 +529,7 @@ document.addEventListener("input", (event) => {
   }
 });
 document.addEventListener("change", (event) => {
+  if (handleCreatorChange(event.target)) return;
   if (event.target.id === "avatar-upload")
     void uploadAvatar(event.target.files[0]);
   if (event.target.id === "identity-import")
@@ -519,6 +542,8 @@ $("#reset-button").addEventListener("click", () => {
 $("#reset-dialog").addEventListener("close", () => {
   if ($("#reset-dialog").returnValue === "reset") {
     state = normalizeIdentity();
+    appearanceHistory.clear();
+    creatorUI.selectedPart = -1;
     save();
     render();
     toast("A fresh start. Let’s meet your next teammate.");
@@ -612,3 +637,519 @@ if (context?.registerTool) {
   }
   window.addEventListener("pagehide", () => lifecycle.abort(), { once: true });
 }
+
+// Appearance editing is isolated from the employee's name, voice, and brain.
+function appearanceSnapshot() {
+  const {
+    avatarMode,
+    avatarDesign,
+    avatarResolution,
+    customAvatar,
+    accent,
+    collection,
+    avatar,
+  } = state;
+  return structuredClone({
+    avatarMode,
+    avatarDesign,
+    avatarResolution,
+    customAvatar,
+    accent,
+    collection,
+    avatar,
+  });
+}
+function beginAppearance() {
+  appearanceHistory.begin(appearanceSnapshot());
+}
+function finishAppearance() {
+  appearanceHistory.commit(appearanceSnapshot());
+  save();
+  updateHistoryButtons();
+}
+function updateHistoryButtons() {
+  const undo = $('[data-action="avatar-undo"]'),
+    redo = $('[data-action="avatar-redo"]');
+  if (undo) undo.disabled = !appearanceHistory.past.length;
+  if (redo) redo.disabled = !appearanceHistory.future.length;
+}
+function renderCreator(focusSelector) {
+  creatorUI.selectedPart = Math.min(
+    creatorUI.selectedPart,
+    state.avatarDesign.parts.length - 1,
+  );
+  const scroll = $(".inspector-content")?.scrollTop || 0;
+  renderStep();
+  renderPreview();
+  if ($(".inspector-content")) $(".inspector-content").scrollTop = scroll;
+  if (focusSelector) $(focusSelector)?.focus({ preventScroll: true });
+}
+function refreshAppearance() {
+  if (state.step !== 0) {
+    renderPreview();
+    return;
+  }
+  const img = $("#builder-avatar");
+  if (img && state.avatarMode === "builder")
+    img.src = avatarDataURL(state.avatarDesign);
+  const overlay = $("#avatar-handles");
+  if (overlay)
+    overlay.innerHTML = renderHandles(state.avatarDesign, {
+      ...creatorUI,
+      mode: state.avatarMode,
+    });
+  if ($("#stage-hint"))
+    $("#stage-hint").textContent = stageHint(state, creatorUI);
+  syncDesignControls();
+}
+function syncDesignControls() {
+  document.querySelectorAll("[data-design]").forEach((input) => {
+    if (
+      input === document.activeElement &&
+      (input.type === "number" || input.dataset.hex)
+    )
+      return;
+    const value = getPath(state.avatarDesign, input.dataset.design);
+    if (value === undefined) return;
+    if (input.type === "checkbox") input.checked = value;
+    else input.value = value;
+  });
+}
+function editDesign(path, value) {
+  const next = structuredClone(state.avatarDesign);
+  setPath(next, path, value);
+  const [side, key] = path.split(".");
+  if (creatorUI.linkEyes && ["leftEye", "rightEye"].includes(side))
+    setPath(
+      next,
+      `${side === "leftEye" ? "rightEye" : "leftEye"}.${key}`,
+      ["x", "rotation"].includes(key) ? -value : value,
+    );
+  state.avatarDesign = normalizeAvatar(next);
+}
+function handleCreatorInput(input) {
+  if (input.dataset.design) {
+    if (input.dataset.hex && !isHexColor(input.value)) return true;
+    if (input.value === "" && input.type === "number") return true;
+    let value =
+      input.type === "checkbox"
+        ? input.checked
+        : ["range", "number"].includes(input.type)
+          ? Number(input.value)
+          : input.value;
+    if (typeof value === "number" && !Number.isFinite(value)) return true;
+    beginAppearance();
+    editDesign(input.dataset.design, value);
+    refreshAppearance();
+    scheduleSave();
+    return true;
+  }
+  if (["card-accent", "card-accent-hex"].includes(input.id)) {
+    if (isHexColor(input.value)) {
+      beginAppearance();
+      state.accent = input.value.toLowerCase();
+      const other = $(
+        input.id === "card-accent" ? "#card-accent-hex" : "#card-accent",
+      );
+      if (other) other.value = state.accent;
+      scheduleSave();
+    }
+    return true;
+  }
+  return false;
+}
+function handleCreatorChange(input) {
+  if (input.dataset.design) {
+    if (input.dataset.hex && !isHexColor(input.value)) {
+      input.value = getPath(state.avatarDesign, input.dataset.design);
+      toast("Use a six-digit hex color, such as #a6c874.");
+    }
+    // Some controls (checkboxes/selects) can emit change without input in older browsers.
+    if (input.type === "checkbox" || input.tagName === "SELECT")
+      handleCreatorInput(input);
+    input.value = getPath(state.avatarDesign, input.dataset.design);
+    finishAppearance();
+    if (input.dataset.design === "background")
+      renderCreator('[data-design="background"]');
+    return true;
+  }
+  if (["card-accent", "card-accent-hex"].includes(input.id)) {
+    if (!isHexColor(input.value)) {
+      input.value = state.accent;
+      toast("Use a six-digit hex color.");
+    }
+    finishAppearance();
+    return true;
+  }
+  if (input.id === "link-eyes") {
+    creatorUI.linkEyes = input.checked;
+    return true;
+  }
+  if (input.id === "avatar-resolution") {
+    beginAppearance();
+    state.avatarResolution = Number(input.value);
+    finishAppearance();
+    return true;
+  }
+  if (input.id === "design-import") {
+    void importDesign(input.files[0]);
+    return true;
+  }
+  return false;
+}
+function handleCreatorClick(button) {
+  if (button.dataset.avatarMode) {
+    beginAppearance();
+    state.avatarMode =
+      button.dataset.avatarMode === "upload" && state.customAvatar
+        ? "upload"
+        : "builder";
+    finishAppearance();
+    renderCreator();
+    return true;
+  }
+  if (button.dataset.panel) {
+    creatorUI.panel = button.dataset.panel;
+    renderCreator();
+    if ($(".inspector-content")) $(".inspector-content").scrollTop = 0;
+    return true;
+  }
+  if (button.dataset.eyeSide) {
+    creatorUI.eyeSide = button.dataset.eyeSide;
+    renderCreator(`[data-eye-side="${creatorUI.eyeSide}"]`);
+    return true;
+  }
+  if (button.hasAttribute("data-select-part")) {
+    creatorUI.selectedPart = Number(button.dataset.selectPart);
+    renderCreator(`[data-select-part="${creatorUI.selectedPart}"]`);
+    return true;
+  }
+  if (button.dataset.lock) {
+    const key = button.dataset.lock;
+    if (creatorUI.locks.has(key)) creatorUI.locks.delete(key);
+    else creatorUI.locks.add(key);
+    renderCreator(`[data-lock="${key}"]`);
+    return true;
+  }
+  if (button.dataset.designChoice) {
+    beginAppearance();
+    editDesign(button.dataset.designChoice, button.dataset.value);
+    finishAppearance();
+    renderCreator(
+      `[data-design-choice="${button.dataset.designChoice}"][data-value="${button.dataset.value}"]`,
+    );
+    return true;
+  }
+  if (button.dataset.expression) {
+    beginAppearance();
+    state.avatarDesign = applyExpression(
+      state.avatarDesign,
+      button.dataset.expression,
+    );
+    finishAppearance();
+    renderCreator(`[data-expression="${button.dataset.expression}"]`);
+    return true;
+  }
+  const action = button.dataset.action;
+  if (action === "avatar-undo" || action === "avatar-redo") {
+    Object.assign(
+      state,
+      action === "avatar-undo"
+        ? appearanceHistory.undo(appearanceSnapshot())
+        : appearanceHistory.redo(appearanceSnapshot()),
+    );
+    save();
+    renderCreator();
+    return true;
+  }
+  if (action === "avatar-randomize") {
+    if (creatorUI.locks.size === 4) {
+      toast("Unlock a category to explore new combinations.");
+      return true;
+    }
+    beginAppearance();
+    state.avatarDesign = randomizeAvatar(
+      state.avatarDesign,
+      [...creatorUI.locks],
+      crypto.getRandomValues(new Uint32Array(1))[0],
+    );
+    finishAppearance();
+    renderCreator('[data-action="avatar-randomize"]');
+    return true;
+  }
+  if (["add-piece", "duplicate-piece", "remove-piece"].includes(action)) {
+    const parts = state.avatarDesign.parts;
+    if (action !== "remove-piece" && parts.length >= 8) {
+      toast("You can combine up to eight extra pieces.");
+      return true;
+    }
+    beginAppearance();
+    if (action === "add-piece") {
+      parts.push({
+        id: `piece-${parts.length + 1}`,
+        shape: "orb",
+        color: state.avatarDesign.bodyColor,
+        x: -115,
+        y: -85,
+        width: 85,
+        height: 85,
+        rotation: 0,
+        front: false,
+      });
+      creatorUI.selectedPart = parts.length - 1;
+    }
+    if (action === "duplicate-piece" && parts[creatorUI.selectedPart]) {
+      const part = structuredClone(parts[creatorUI.selectedPart]);
+      part.x = Math.max(-170, Math.min(170, -part.x));
+      parts.push(part);
+      creatorUI.selectedPart = parts.length - 1;
+    }
+    if (action === "remove-piece" && parts[creatorUI.selectedPart]) {
+      parts.splice(creatorUI.selectedPart, 1);
+      creatorUI.selectedPart = Math.min(
+        creatorUI.selectedPart,
+        parts.length - 1,
+      );
+    }
+    state.avatarDesign = normalizeAvatar(state.avatarDesign);
+    finishAppearance();
+    renderCreator();
+    return true;
+  }
+  if (["export-png", "export-svg", "export-design"].includes(action)) {
+    void exportAvatar(action);
+    return true;
+  }
+  if (action === "import-design") {
+    $("#design-import").click();
+    return true;
+  }
+  return false;
+}
+async function exportAvatar(kind) {
+  const snapshot = structuredClone(state),
+    name = safeSlug(snapshot.name);
+  try {
+    if (kind === "export-png")
+      downloadBlob(await avatarBlob(snapshot), `${name}-avatar.png`);
+    if (kind === "export-svg")
+      downloadBlob(
+        new Blob(
+          [
+            renderAvatarSVG(snapshot.avatarDesign, {
+              size: snapshot.avatarResolution,
+            }),
+          ],
+          { type: "image/svg+xml" },
+        ),
+        `${name}-avatar.svg`,
+      );
+    if (kind === "export-design")
+      downloadBlob(
+        new Blob(
+          [
+            JSON.stringify(
+              {
+                type: "taste-vault-avatar",
+                version: 1,
+                design: snapshot.avatarDesign,
+              },
+              null,
+              2,
+            ),
+          ],
+          { type: "application/json" },
+        ),
+        `${name}.avatar.json`,
+      );
+    toast(
+      kind === "export-design"
+        ? "Editable design saved. Open it here anytime."
+        : "Your avatar is ready. Check your downloads.",
+    );
+  } catch (error) {
+    toast(error.message || "Could not export this avatar. Please try again.");
+  }
+}
+async function importDesign(file) {
+  if (!file) return;
+  if (file.size > 250000) {
+    toast("Choose a Taste Vault avatar design smaller than 250 KB.");
+    return;
+  }
+  try {
+    const value = JSON.parse(await file.text());
+    if (
+      value?.type !== "taste-vault-avatar" ||
+      value.version !== 1 ||
+      !value.design ||
+      typeof value.design !== "object" ||
+      Array.isArray(value.design)
+    )
+      throw new Error(
+        "Choose an avatar-design.json or .avatar.json exported by Taste Vault.",
+      );
+    beginAppearance();
+    state.avatarDesign = normalizeAvatar(value.design);
+    state.avatarMode = "builder";
+    creatorUI.selectedPart = -1;
+    finishAppearance();
+    renderCreator();
+    toast("Your editable design is back.");
+  } catch (error) {
+    toast(
+      error instanceof SyntaxError
+        ? "That file is not valid JSON."
+        : error.message,
+    );
+  }
+}
+
+let activeAvatarDrag = null;
+function canvasPoint(event, svg) {
+  const rect = svg.getBoundingClientRect(),
+    x = ((event.clientX - rect.left) / rect.width) * 512 - 256,
+    y = ((event.clientY - rect.top) / rect.height) * 512 - 268,
+    angle = (-state.avatarDesign.rotation * Math.PI) / 180;
+  return {
+    x: x * Math.cos(angle) - y * Math.sin(angle),
+    y: x * Math.sin(angle) + y * Math.cos(angle),
+  };
+}
+document.addEventListener("pointerdown", (event) => {
+  const target = event.target.closest(
+    "[data-drag-part],[data-drag-eye],[data-contour]",
+  );
+  if (!target || state.step !== 0 || state.avatarMode !== "builder") return;
+  event.preventDefault();
+  target.focus({ preventScroll: true });
+  const svg = $("#avatar-handles"),
+    point = canvasPoint(event, svg);
+  beginAppearance();
+  if (target.dataset.dragEye && creatorUI.eyeSide !== target.dataset.dragEye) {
+    creatorUI.eyeSide = target.dataset.dragEye;
+    renderPreview();
+  }
+  activeAvatarDrag = {
+    pointerId: event.pointerId,
+    svg,
+    start: point,
+    initial: structuredClone(state.avatarDesign),
+    part: target.dataset.dragPart,
+    eye: target.dataset.dragEye,
+    contour: target.dataset.contour,
+  };
+  svg.setPointerCapture(event.pointerId);
+});
+document.addEventListener("pointermove", (event) => {
+  const drag = activeAvatarDrag;
+  if (!drag || event.pointerId !== drag.pointerId) return;
+  const point = canvasPoint(event, drag.svg),
+    dx = point.x - drag.start.x,
+    dy = point.y - drag.start.y,
+    next = structuredClone(drag.initial);
+  if (drag.part !== undefined) {
+    next.parts[drag.part].x += dx;
+    next.parts[drag.part].y += dy;
+  }
+  if (drag.eye) {
+    next[drag.eye].x += dx;
+    next[drag.eye].y += dy;
+    if (creatorUI.linkEyes) {
+      const other = drag.eye === "leftEye" ? "rightEye" : "leftEye";
+      next[other].x = -next[drag.eye].x;
+      next[other].y = next[drag.eye].y;
+    }
+  }
+  if (drag.contour !== undefined) {
+    const angle = (Number(drag.contour) / 12) * Math.PI * 2 - Math.PI / 2;
+    const normalizedX = point.x / (next.width / 2),
+      normalizedY = point.y / (next.height / 2);
+    next.contour[Number(drag.contour)] =
+      Math.cos(angle) * normalizedX + Math.sin(angle) * normalizedY;
+  }
+  state.avatarDesign = normalizeAvatar(next);
+  refreshAppearance();
+});
+function endAvatarDrag(event) {
+  if (!activeAvatarDrag || event.pointerId !== activeAvatarDrag.pointerId)
+    return;
+  const drag = activeAvatarDrag;
+  activeAvatarDrag = null;
+  refreshAppearance();
+  finishAppearance();
+  const selector =
+    drag.part !== undefined
+      ? `[data-drag-part="${drag.part}"]`
+      : drag.eye
+        ? `[data-drag-eye="${drag.eye}"]`
+        : `[data-contour="${drag.contour}"]`;
+  $(selector)?.focus({ preventScroll: true });
+}
+document.addEventListener("pointerup", endAvatarDrag);
+document.addEventListener("pointercancel", (event) => {
+  if (!activeAvatarDrag || event.pointerId !== activeAvatarDrag.pointerId)
+    return;
+  const before = appearanceHistory.cancel();
+  if (before) Object.assign(state, before);
+  activeAvatarDrag = null;
+  refreshAppearance();
+  save();
+  updateHistoryButtons();
+});
+document.addEventListener("keydown", (event) => {
+  if (state.step !== 0) return;
+  const target = event.target.closest(
+    "[data-drag-part],[data-drag-eye],[data-contour]",
+  );
+  if (
+    target &&
+    ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)
+  ) {
+    event.preventDefault();
+    beginAppearance();
+    const amount = event.shiftKey ? 10 : 2,
+      sign = ["ArrowLeft", "ArrowUp"].includes(event.key) ? -1 : 1,
+      axis = ["ArrowLeft", "ArrowRight"].includes(event.key) ? "x" : "y";
+    let selector;
+    if (target.dataset.dragPart !== undefined) {
+      const index = Number(target.dataset.dragPart);
+      editDesign(
+        `parts.${index}.${axis}`,
+        state.avatarDesign.parts[index][axis] + sign * amount,
+      );
+      selector = `[data-drag-part="${index}"]`;
+    }
+    if (target.dataset.dragEye) {
+      const side = target.dataset.dragEye;
+      editDesign(
+        `${side}.${axis}`,
+        state.avatarDesign[side][axis] + sign * amount,
+      );
+      selector = `[data-drag-eye="${side}"]`;
+    }
+    if (target.dataset.contour !== undefined) {
+      const index = Number(target.dataset.contour);
+      state.avatarDesign.contour[index] +=
+        (["ArrowUp", "ArrowRight"].includes(event.key) ? 1 : -1) *
+        (event.shiftKey ? 0.1 : 0.02);
+      state.avatarDesign = normalizeAvatar(state.avatarDesign);
+      selector = `[data-contour="${index}"]`;
+    }
+    refreshAppearance();
+    finishAppearance();
+    $(selector)?.focus({ preventScroll: true });
+    return;
+  }
+  if (
+    (event.metaKey || event.ctrlKey) &&
+    event.key.toLowerCase() === "z" &&
+    !event.target.closest("input,textarea,select,[contenteditable]")
+  ) {
+    event.preventDefault();
+    handleCreatorClick({
+      dataset: { action: event.shiftKey ? "avatar-redo" : "avatar-undo" },
+      hasAttribute: () => false,
+    });
+  }
+});

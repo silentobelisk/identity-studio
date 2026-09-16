@@ -108,7 +108,7 @@ test("ZIP is readable by a standard unzip tool with intact Unicode and binary en
       spawnSync("unzip", ["-p", archive, "avatar.png"]).stdout,
       Buffer.from(binary),
     );
-    assert.equal(Object.keys(files).length, 7);
+    assert.equal(Object.keys(files).length, 9);
   } finally {
     await rm(folder, { recursive: true, force: true });
   }

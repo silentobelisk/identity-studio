@@ -1,3 +1,12 @@
+import {
+  DEFAULT_AVATAR,
+  normalizeAvatar,
+  isHexColor,
+  renderAvatarSVG,
+  describeAvatar,
+} from "./avatar.js";
+
+// Kept only so first-edition identity files retain their original image.
 export const COLLECTIONS = {
   characters: {
     label: "Characters",
@@ -55,7 +64,10 @@ export const ACCENTS = [
   { name: "Cloud", color: "#deded8" },
 ];
 export const DEFAULT_IDENTITY = {
-  version: 1,
+  version: 2,
+  avatarMode: "builder",
+  avatarDesign: DEFAULT_AVATAR,
+  avatarResolution: 1024,
   step: 0,
   collection: "characters",
   avatar: 0,
@@ -93,7 +105,10 @@ export function normalizeIdentity(input = {}) {
     d.collection = input.collection;
   if (Number.isInteger(input.avatar) && input.avatar >= 0 && input.avatar < 4)
     d.avatar = input.avatar;
-  if (ACCENTS.some((a) => a.color === input.accent)) d.accent = input.accent;
+  if (isHexColor(input.accent)) d.accent = input.accent.toLowerCase();
+  d.avatarDesign = normalizeAvatar(input.avatarDesign);
+  if ([512, 1024, 2048].includes(input.avatarResolution))
+    d.avatarResolution = input.avatarResolution;
   if (Number.isInteger(input.step) && input.step >= 0 && input.step <= 4)
     d.step = input.step;
   for (const key of ["warmth", "detail", "energy"])
@@ -111,6 +126,14 @@ export function normalizeIdentity(input = {}) {
     )
   )
     d.customAvatar = input.customAvatar;
+  d.avatarMode = ["builder", "upload", "legacy"].includes(input.avatarMode)
+    ? input.avatarMode
+    : d.customAvatar
+      ? "upload"
+      : input.version === 1 && Object.hasOwn(COLLECTIONS, input.collection)
+        ? "legacy"
+        : "builder";
+  if (d.avatarMode === "upload" && !d.customAvatar) d.avatarMode = "builder";
   return d;
 }
 export function safeSlug(name) {
@@ -171,9 +194,14 @@ export function voiceSample(d) {
   return `${opening} ${middle}${d.detail > 35 ? " Share the context and the outcome you have in mind, and I’ll help you think through a useful next step." : "Where should we start?".replace(/^/, " ")}${d.traits.includes("Playful") ? " Half-baked ideas welcome." : ""}`;
 }
 export function avatarPrompt(d) {
-  const type = d.customAvatar
-    ? "Use the supplied avatar.png as the identity reference."
-    : `Create an original ${d.collection === "characters" ? "sculptural matte clay mascot with two expressive eyes" : d.collection === "objects" ? "sculptural abstract object with a strong, simple silhouette" : "stylized editorial 3D head-and-shoulders portrait of a fictional adult"}. Visual starting point: ${COLLECTIONS[d.collection].names[d.avatar]}.`;
+  if (d.avatarMode === "builder")
+    return `${describeAvatar(d.avatarDesign)} This is ${d.name}, an AI ${d.role}, with a ${d.traits.join(", ").toLowerCase()} personality. Preserve the chosen rendering style, individual features, colors, construction, and background treatment from the reference artwork. Keep it recognizable at small profile-picture sizes. No text, logos, watermark, or interface elements.`;
+  const type =
+    d.avatarMode === "builder"
+      ? describeAvatar(d.avatarDesign)
+      : d.avatarMode === "upload"
+        ? "Use the supplied avatar.png as the identity reference."
+        : `Create an original ${d.collection === "characters" ? "sculptural matte clay mascot with two expressive eyes" : d.collection === "objects" ? "sculptural abstract object with a strong, simple silhouette" : "stylized editorial 3D head-and-shoulders portrait of a fictional adult"}. Visual starting point: ${COLLECTIONS[d.collection].names[d.avatar]}.`;
   return `${type} This is ${d.name}, an AI ${d.role}. Convey ${d.traits.join(", ").toLowerCase()}. Square profile picture, centered composition, soft studio light, uncluttered warm neutral background, recognizable at 32 pixels. Accent color ${d.accent}. No text, watermark, logos, or interface elements. Keep future variations consistent with the selected character.`;
 }
 const lines = (value) =>
@@ -190,11 +218,14 @@ export function createKitFiles(input) {
   const profile = { ...d };
   delete profile.step;
   profile.avatarFile = "avatar.png";
-  profile.avatarSource = d.customAvatar
-    ? "user-upload"
-    : `${d.collection}/${d.avatar}`;
+  profile.avatarSource =
+    d.avatarMode === "builder"
+      ? "procedural-design"
+      : d.avatarMode === "upload"
+        ? "user-upload"
+        : `${d.collection}/${d.avatar}`;
   const traitText = d.traits.join(", ");
-  return {
+  const files = {
     "START-HERE.md": `# Meet ${d.name}\n\nYour AI employee’s identity kit, made with Taste Vault.\n\n## What’s inside\n\n- IDENTITY.md — name, role, and personality\n- BRAIN.md — purpose, working context, principles, and boundaries\n- VOICE.md — tone and a sample introduction\n- avatar.png — a 512 × 512 profile picture\n- avatar-prompt.md — a prompt for future visual variations\n- identity.json — a portable profile (reimport into Taste Vault to keep editing)\n\n## Your next step\n\nGive these files to the coding agent or builder you use for your AI employee. Start with: “Read this identity kit and use it as the foundation for my AI employee. Ask me about its responsibilities and workflows before implementing anything.”\n\nThis kit defines identity and preferences. It does not configure tools, memory, permissions, autonomous actions, or integrations. BRAIN.md is written guidance, not an executable agent or enforcement layer.\n\nYour uploaded images remain subject to their existing rights. Built-in avatars are original AI-generated artwork.\n`,
     "IDENTITY.md": `# ${d.name}\n\n**Role:** ${d.role}\n**Pronouns:** ${d.pronouns || "Not specified"}\n**Personality:** ${traitText}\n**Accent color:** ${d.accent}\n**Profile picture:** avatar.png\n\n## Purpose\n\n${d.purpose}\n\nAn AI teammate with a consistent identity. Never imply that this persona is a human or claim real-world experiences it does not have.\n`,
     "BRAIN.md": `# ${d.name} — working identity\n\n## Purpose\n\n${d.purpose}\n\n## Who I work with\n\n${d.audience || "Ask the user about their team and context."}\n\n## How I approach work\n\n${lines(d.principles) || "- Ask the user how they prefer to work."}\n\n## Boundaries\n\n${lines(d.boundaries) || "- Clarify permissions before taking consequential actions."}\n\n## Personality\n\n${traitText}. ${voiceDescription(d)}.\n\n## Before the build\n\nThis file provides persona guidance only. Confirm the actual responsibilities, data access, approval rules, tools, and success criteria separately. It does not grant permissions or enforce controls.\n`,
@@ -202,6 +233,26 @@ export function createKitFiles(input) {
     "avatar-prompt.md": `# Avatar direction\n\n${avatarPrompt(d)}\n`,
     "identity.json": JSON.stringify(profile, null, 2),
   };
+  if (d.avatarMode === "builder") {
+    files["avatar.svg"] = renderAvatarSVG(d.avatarDesign, {
+      size: d.avatarResolution,
+    });
+    files["avatar-design.json"] = JSON.stringify(
+      { type: "taste-vault-avatar", version: 1, design: d.avatarDesign },
+      null,
+      2,
+    );
+  }
+  files["START-HERE.md"] = files["START-HERE.md"]
+    .replace("512 × 512", `${d.avatarResolution} × ${d.avatarResolution}`)
+    .replace(
+      "Built-in avatars are original AI-generated artwork.",
+      "Custom characters are rendered from your editable design. First-edition gallery artwork is retained only for older projects.",
+    );
+  if (d.avatarMode === "builder")
+    files["START-HERE.md"] +=
+      "\n## Keep creating\n\n- avatar.svg — scalable artwork matching the exported PNG\n- avatar-design.json — open with “Open a design” in Taste Vault to edit every shape, color, and facial feature\n\nThe full identity.json also preserves this construction.\n";
+  return files;
 }
 // ZIP uses STORE entries: small, dependency-free, and readable by standard unzip tools.
 const encoder = new TextEncoder();

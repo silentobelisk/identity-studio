@@ -2,24 +2,29 @@
 
 ## Automated checks
 
-`npm test` checks JavaScript syntax and runs seven regression checks:
+`npm test` checks JavaScript syntax and runs 17 regression checks covering:
 
-- Imported settings are bounded and unknown values are rejected.
-- Missing required identity fields prevent export with actionable errors.
-- JSON export/import preserves user-authored text, choices, and uploaded avatar data.
-- Voice settings produce a different sample and appear in the exported guidance.
-- Download filenames cannot contain paths and support a non-Latin fallback.
-- A standard system unzip validates archive integrity, Unicode text, and binary entries.
-- Local HTML/CSS assets and square, evenly divisible avatar sheets are present.
+- Bounded identity and avatar imports, invalid inputs, required identity fields, and safe filenames.
+- Complete identity round trips, including arbitrary colors, independent eyes, body pieces, contour data, export resolution, and uploaded pictures.
+- Migration of first-edition gallery identities without changing their selected artwork.
+- Deterministic, finite SVG rendering across all 12 body shapes and four rendering styles.
+- Seeded exploration, locks, and preservation of locked body-piece geometry.
+- Grouped appearance undo/redo, cancellation restoration, and expression changes that preserve body construction.
+- Transparent backgrounds and consistency between the editable design and exported SVG.
+- Tone guidance, portable ZIP integrity with system unzip, Unicode text, binary entries, and local assets.
 
-The local HTTP server returned 200 and the studio was opened successfully in the browser. A read-only source review covered user-input escaping, upload/import handling, reset cancellation, export behavior, and supporting text contrast. The reset dialog clears its return value before opening so Escape cannot repeat a previous confirmation.
+## Browser checks
+
+In desktop Chrome, verified adding a body piece, moving it with arrow keys, and undoing both operations. Changed one eye’s height while confirming the other eye remained unchanged, then restored the draft. Downloaded a PNG through the interface and verified it was 1024 × 1024 with an alpha channel. Downloaded the full identity kit, checked all nine entries and archive integrity, verified its PNG dimensions, and confirmed the avatar design exactly matches the profile’s construction. Inspected the studio layout and confirmed the editor loads from the local HTTP server.
+
+A separate source review found no remaining blockers in editor state handling, normalized designs, or PNG/SVG export paths. Existing import, upload, escaping, and reset handling were also reviewed during the first build.
 
 ## Limits
 
-Full browser interaction, screen-reader, mobile-device, and visual screenshot testing have not been performed. The optional WebMCP registration and execution require a supported browser context; that capability was not available for verification in this build. It does not affect the standard UI.
+Full cross-browser, screen-reader, mobile-device, and 200% zoom testing has not been performed. The optional WebMCP registration and execution require a supported browser context and have not been verified. That capability does not affect the standard UI.
 
-The ZIP test validates binary entry integrity using a small fixture; image decoding, canvas rasterization, and actual browser downloads still merit manual cross-browser checking before a wide course launch.
+Automated tests verify JSON round trips, and the actual browser PNG and full-kit downloads were inspected separately. Reimport through the file picker still merits a manual release check before a wide course launch.
 
 ## Suggested manual release check
 
-Complete all five steps, download and unzip a kit, then import its identity.json. Repeat with a custom avatar. Check keyboard navigation, range controls, empty required fields, and reset cancellation. Verify the layout at narrow widths and 200% zoom. Test with browser storage and clipboard access blocked to confirm that fallback messages remain useful.
+Create a sculpted character with extra pieces, distinct eyes, and a transparent background. Finish all five steps, download and unzip a kit, then import its identity.json. Reopen avatar-design.json independently and verify continued editing. Repeat with an uploaded picture. Check touch dragging, keyboard navigation, range controls, empty required fields, reset cancellation, and narrow layouts. Test with browser storage and clipboard access blocked to confirm useful fallback messages.
