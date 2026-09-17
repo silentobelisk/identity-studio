@@ -32,3 +32,7 @@ Automated tests verify JSON round trips, and the actual browser PNG and full-kit
 ## Suggested manual release check
 
 Create a sculpted character with extra pieces, distinct eyes, and a transparent background. Finish all five steps, download and unzip a kit, then import its identity.json. Reopen avatar-design.json independently and verify continued editing. Repeat with an uploaded picture. Check touch dragging, keyboard navigation, range controls, empty required fields, reset cancellation, and narrow layouts. Test with browser storage and clipboard access blocked to confirm useful fallback messages.
+
+## Repository presentation and download package
+
+On September 16, 2026, checked the README banner and actual studio screenshot, verified relative documentation and image links, and built the release ZIP from the committed source. The ZIP passes archive integrity checks and all 17 regression tests after extraction, with no dependency installation. The package omits this repository's project-specific `.openai` hosting configuration.

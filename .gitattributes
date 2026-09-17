@@ -1,0 +1,2 @@
+# Downloads are portable and should not inherit this project's hosting identity.
+.openai export-ignore

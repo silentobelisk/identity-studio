@@ -27,3 +27,7 @@ The first-edition avatar sheets were generated specifically for this project. Th
 ## Product boundary
 
 The studio creates an identity. It does not claim to create an operational AI employee. The “brain” is plain-language guidance for a later implementation, and voice samples are deterministic templates. No runtime language model integration is implied.
+
+## Repository presentation
+
+The GitHub cover carries the same white, black, and pink-red palette, condensed headline, and geometric character direction. A separate screenshot shows the actual editor. The cover, social preview, and generation prompt are kept in [docs/images](images/README.md). The README prioritizes the release download and local setup; detailed usage and development notes have their own guides.

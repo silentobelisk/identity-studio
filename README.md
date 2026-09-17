@@ -1,122 +1,132 @@
-# Identity Studio
+<p align="center">
+  <img src="docs/images/identity-studio-banner.png" alt="Identity Studio by AI Employee Lab — give your next teammate an identity." width="100%" />
+</p>
 
-**An AI Employee Lab studio for giving your employee a name, a face, and a point of view.**
+<h1 align="center">Identity Studio</h1>
 
-Identity Studio helps you shape the AI employee you’ve already decided to build. Create an original avatar from editable shapes, make an introduction, shape a personality, and download a complete identity kit.
+<p align="center">
+  <strong>A name. A face. A point of view.</strong><br />
+  Create the identity behind your next AI employee, then take the whole kit with you.
+</p>
 
-This is the groundwork before the build. It defines identity and preferences; it does not set up workflows, tools, integrations, or autonomous behavior.
+<p align="center">
+  <a href="https://github.com/silentobelisk/identity-studio/releases/latest"><img src="https://img.shields.io/badge/version-2.1.0-cc3154?style=flat-square" alt="Version 2.1.0" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-151418?style=flat-square" alt="Code licensed under MIT" /></a>
+  <a href="#download--get-started"><img src="https://img.shields.io/badge/Node.js-22%2B-151418?style=flat-square" alt="Requires Node.js 22 or newer" /></a>
+  <a href="docs/GUIDE.md#your-data"><img src="https://img.shields.io/badge/API_key-not_needed-cc3154?style=flat-square" alt="No API key needed" /></a>
+</p>
 
-## Get started
+<p align="center">
+  <a href="https://github.com/silentobelisk/identity-studio/releases/latest/download/identity-studio.zip"><strong>Download Identity Studio ↓</strong></a>
+  &nbsp; · &nbsp;
+  <a href="#download--get-started">Quick start</a>
+  &nbsp; · &nbsp;
+  <a href="docs/GUIDE.md">User guide</a>
+  &nbsp; · &nbsp;
+  <a href="https://www.skool.com/aiemployeelab">AI Employee Lab ↗</a>
+</p>
 
-1. Download this repository with **Code → Download ZIP**, then unzip it. Or clone it:
+---
 
-   ```sh
-   git clone https://github.com/silentobelisk/taste-vault.git
-   cd taste-vault
-   ```
+**Give your AI employee a sense of self before you build.** Shape an original avatar, choose a name, tune its personality, and write the principles it will work by. Identity Studio packages it all into a portable ZIP for your next project.
 
-2. Install [Node.js 22 or newer](https://nodejs.org/) if you don’t already have it.
-3. Open a terminal in the project folder and run:
+Runs locally in your browser. No account, API key, paid service, or dependency installation required.
+
+## Download & get started
+
+1. **[Download the latest ZIP](https://github.com/silentobelisk/identity-studio/releases/latest/download/identity-studio.zip)** and unzip it.
+2. Install **[Node.js 22 or newer](https://nodejs.org/)** if you don’t have it yet.
+3. Open Terminal on macOS/Linux or PowerShell on Windows **inside the unzipped `identity-studio` folder**, then run:
 
    ```sh
    npm start
    ```
 
-4. Open **http://localhost:4173**.
+4. Open **[localhost:4173](http://localhost:4173)** in your browser.
 
-No `npm install`, account, API key, or paid service is needed. Keep the terminal open while using the studio. Press `Ctrl+C` to stop it. Don’t open `index.html` directly: browser modules need a local web server.
+That’s it. You can skip `npm install`. Keep the terminal open while you work; press `Ctrl+C` to stop the studio. Open the localhost link, rather than double-clicking `index.html`.
 
-## Inside the studio
+<details>
+<summary><strong>Prefer to clone the source?</strong></summary>
 
-1. **The look** — Create a character in the avatar studio. Sculpt a silhouette, assemble body pieces, adjust each eye, and choose your colors, rendering style, patterns, and accessories. You can also upload your own PNG, JPEG, or WebP, cropped to a centered square.
-2. **The name** — Set a name, role, and optional pronouns.
-3. **The personality** — Choose up to five traits and adjust warmth, detail, and energy. A template-based introduction previews the tone.
-4. **The brain** — Describe purpose, working context, principles, and boundaries.
-5. **The identity kit** — Download everything as a ZIP. Copy the brain or avatar prompt separately if useful.
+```sh
+git clone https://github.com/silentobelisk/identity-studio.git
+cd identity-studio
+npm start
+```
 
-The live ID card follows your choices. You can revisit any step.
+The [main-branch ZIP](https://github.com/silentobelisk/identity-studio/archive/refs/heads/main.zip) contains the latest source, which may be ahead of the release. Its extracted folder is named `identity-studio-main`.
 
-## Make it your own
+</details>
 
-- **Body:** start with a geometric or organic shape, change its proportions, or drag the 12 contour handles in **Sculpt your own**. Add up to eight pieces for ears, limbs, or your own construction; position, size, rotate, recolor, duplicate, and layer each piece.
-- **Face:** edit either eye’s shape, width, height, angle, and position independently. Link the eyes for mirrored editing, move the whole face, and adjust the mouth and blush.
-- **Style:** switch between soft volume, flat graphic, sticker, and pixel treatments. Use any hex colors, patterns, and transparent, solid, gradient, or circular backgrounds.
-- **Details:** add glasses, antennae, sprouts, horns, crowns, or a beanie. Build other details from pieces.
-- **Explore:** create new combinations while keeping your chosen body, face, style/colors, or extra pieces locked. Undo and redo appearance edits. Canvas handles also support arrow keys; hold Shift for larger steps.
-- **Keep editing:** save and reopen the avatar design, or carry it with the full identity kit. Export PNG at 512, 1024, or 2048 pixels and SVG for scalable artwork.
+## Meet the studio
 
-Shapes and expression shortcuts are editable starting points. The studio renders your construction immediately in the browser; it does not require a generation service or API key.
+![Identity Studio's avatar canvas, five-step navigation, and editable shape controls.](docs/images/identity-studio-preview.jpg)
 
-## What you download
+| Make it yours | What you can do |
+| --- | --- |
+| **The look** | Sculpt a character, edit each eye, assemble body pieces, and choose colors, accessories, and four rendering styles. Or upload your own picture. |
+| **The name** | Give your teammate a name, role, and optional pronouns. |
+| **The personality** | Choose traits and tune warmth, detail, and energy with a sample introduction. |
+| **The brain** | Define purpose, working context, principles, and boundaries. |
+| **The identity kit** | Download the avatar, written identity, voice guidance, and editable source in one ZIP. |
+
+Undo, redo, lock your favorite details, and explore new combinations. Export your character as SVG or PNG at 512, 1024, or 2048 pixels. The live identity card follows your choices.
+
+## One download. A complete identity.
 
 ```text
 milo-identity-kit.zip
-├── START-HERE.md       Next-step instructions
+├── START-HERE.md       Where to go next
 ├── IDENTITY.md         Name, role, pronouns, and personality
 ├── BRAIN.md            Purpose, context, principles, and boundaries
 ├── VOICE.md            Tone settings and a sample introduction
-├── avatar.png          Profile picture at your selected size
+├── avatar.png          Ready-to-use profile picture
 ├── avatar.svg          Scalable character artwork
-├── avatar-design.json  Editable character construction
+├── avatar-design.json  Editable avatar construction
 ├── avatar-prompt.md    A prompt for future visual variations
-└── identity.json       Portable profile for continued editing
+└── identity.json       Portable profile to reopen in the studio
 ```
 
-Give the kit to your AI employee’s project or coding agent. For example:
+SVG and avatar-design files are included for characters built in the studio. Uploaded pictures and older gallery identities use image-based exports.
+
+Bring the kit into your AI employee project with a prompt like:
 
 > Read this identity kit and use it as the foundation for my AI employee. Ask me about its responsibilities and workflows before implementing anything.
 
-`BRAIN.md` is written guidance, not a running agent, memory system, or permission enforcement layer. Exported traits and settings express preferences; actual model behavior depends on the employee you build next.
+The kit supplies identity and written guidance. Workflows, tools, integrations, and the running employee are the next step.
 
-To resume an earlier identity, open **The identity kit → Import identity.json**. Import replaces the current browser draft. Download the current kit first if you want to keep both. Uploaded avatars are embedded in the JSON so they survive a round trip.
+## Your work stays with you
 
-SVG and avatar-design files are included for characters built in the studio. Uploaded pictures and first-edition gallery projects retain their image-based exports. Older identity files remain importable. Identity Studio retains the original draft-storage key and saved-design format identifiers for compatibility. The GitHub repository keeps its existing URL.
+- **On your device:** avatar editing, image processing, and ZIP creation happen in your browser. The app sends no identity data or images to a server.
+- **Saved as you go:** one current draft is stored in this browser. Download a kit before clearing browser data or switching devices.
+- **Easy to reopen:** import `identity.json` from **The identity kit** step to keep editing. Import replaces the current draft.
+- **Self-contained:** fonts and artwork ship with the app. No font CDN, analytics, or AI provider calls.
 
-## Your data
+## Help, details & development
 
-- One current draft is saved in this browser’s `localStorage`, including your processed uploaded image.
-- No identity data or images are sent to a server. Avatar processing and ZIP creation run on your device.
-- Fonts and built-in images are included locally; the app does not call a font CDN, analytics service, or AI provider.
-- Drafts do not sync across browsers, devices, or separate hosted URLs. Clearing browser data removes the draft; download a kit to keep it.
-- Local and hosted versions have separate drafts. Use `identity.json` to move between them.
-- Custom characters are rendered from editable design data. There is no text-to-image service in this build. The exported avatar prompt describes your design for use in an external image tool. First-edition generated artwork is retained only for older projects.
+- **[User guide](docs/GUIDE.md)** — avatar controls, identity kits, imports, and saved drafts.
+- **[Development & hosting](docs/DEVELOPMENT.md)** — project structure, local server, and static deployment.
+- **[Contributing](CONTRIBUTING.md)** — report a bug, suggest an improvement, or make a change.
+- **[Release notes](CHANGELOG.md)** — what’s new in Identity Studio.
+- **[Design direction](docs/DESIGN.md)** · **[Validation notes](docs/VALIDATION.md)**
 
-## Development
+<details>
+<summary><strong>Having trouble starting?</strong></summary>
 
-Plain semantic HTML, CSS, and browser JavaScript. No framework or runtime dependencies.
+- **“npm not found” / “npm is not recognized”:** install Node.js, then close and reopen your terminal.
+- **“Could not read package.json”:** make sure the terminal is inside the extracted project folder, next to `package.json`.
+- **“Address already in use”:** another local server is using port 4173. Stop your earlier studio terminal with `Ctrl+C`, or see [how to use another port](docs/DEVELOPMENT.md#using-another-port).
+- **A blank page after opening the HTML file:** run `npm start` and use the localhost link above.
 
-```sh
-npm start   # Local server on 127.0.0.1:4173
-npm test    # Syntax, data/export regression tests, and asset checks
-```
+</details>
 
-The archive interoperability test uses the system `unzip` command when available (included on macOS and most Linux systems). You can also run `npm run check`.
+---
 
-```text
-dist/                  Authored static site, checked into Git
-  index.html           Studio shell and accessible dialogs
-  app.js               UI, draft storage, image processing, download
-  identity.js          Identity model, validation, copy, ZIP writer
-  avatar.js            Editable character model and SVG renderer
-  avatar-editor.js     Canvas handles and customization controls
-  avatar-editor.css    Avatar studio layout and controls
-  styles.css           Responsive visual system
-  assets/              Community logo, local fonts, legacy avatars
-scripts/serve.mjs      Small dependency-free local server
-tests/                 Identity/export and asset checks
-docs/                  Design notes and font licenses
-```
+<p align="center">
+  <img src="dist/assets/ai-employee-lab.jpg" width="40" height="40" alt="AI Employee Lab flask logo" /><br />
+  <strong>Made in the Lab.</strong><br />
+  <a href="https://www.skool.com/aiemployeelab">AI Employee Lab</a> · Your ideas. Your employee. Your way.
+</p>
 
-Edit `dist/` directly. It is the source here, not disposable generated output. The local server does not hot reload; refresh after edits. Set `PORT` to use a different local port.
-
-## Hosting
-
-Any static host can serve the contents of `dist/` at the root of a domain. No build command is needed. Asset paths are root-relative, so subdirectory hosting needs a path adjustment. `.openai/hosting.json` describes this project’s Sites deployment; if you fork the repo to create your own Sites project, remove its `project_id` before registering your own site.
-
-An optional, feature-detected WebMCP tool can configure a draft in supported agent-enabled browsers. The ordinary UI is independent of this capability. See [validation notes](docs/VALIDATION.md) for test coverage and limits.
-
-## Design and credits
-
-Identity Studio follows AI Employee Lab’s classroom design: condensed headlines, white surfaces, pink-red accents, and the lab logo. See [design notes and references](docs/DESIGN.md).
-
-Code is licensed under MIT. Bundled fonts, Anton, DM Sans, and the legacy Instrument Serif files, use the SIL Open Font License; license files are in `docs/`. The AI Employee Lab logo is a brand asset from the community; the MIT license covers the code, not rights to the brand. No source code or artwork from Bible Strong Avatar Lab is included.
+Code is [MIT licensed](LICENSE). Bundled fonts use the SIL Open Font License; their licenses are in `docs/`. The AI Employee Lab name and logo are brand assets and are not covered by the code’s MIT license.
