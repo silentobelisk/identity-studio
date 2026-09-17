@@ -23,6 +23,8 @@ The live ID card follows your choices. You can revisit any step.
 
 Shapes and expression shortcuts are editable starting points. The studio renders your construction immediately in the browser; it does not require a generation service or API key.
 
+Uploaded pictures must be PNG, JPEG, or WebP, at most 10 MB, 50 megapixels, and 16,384 pixels per side. The studio crops and stores a 512 × 512 PNG. Imported identity images are checked against the same dimension limits before display.
+
 ## What you download
 
 ```text

@@ -1,4 +1,5 @@
 import test from "node:test";
+import { PNG_DATA_URL } from "./fixtures.mjs";
 import assert from "node:assert/strict";
 import { mkdtemp, writeFile, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -53,7 +54,7 @@ test("an uploaded avatar and authored identity survive JSON export and reimport"
   const d = normalizeIdentity({
     name: "Amélie",
     role: "Research partner",
-    customAvatar: "data:image/png;base64,aGVsbG8=",
+    customAvatar: PNG_DATA_URL,
     accent: "#e8bfce",
     purpose: "Help my team decide what to read.",
     traits: ["Candid", "Curious"],

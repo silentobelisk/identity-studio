@@ -31,6 +31,7 @@ import {
   getPath,
   setPath,
 } from "./avatar-editor.js";
+import { validateRasterImage, MAX_IMAGE_PIXELS, MAX_IMAGE_SIDE } from "./image-validation.js";
 
 const appearanceHistory = new AppearanceHistory();
 const creatorUI = {
@@ -387,11 +388,15 @@ async function uploadAvatar(file) {
     toast("Choose an image smaller than 10 MB.");
     return;
   }
-  const url = URL.createObjectURL(file);
+  let url;
   try {
+    validateRasterImage(await file.arrayBuffer(), file.type);
+    url = URL.createObjectURL(file);
     const img = await loadImage(url);
-    if (img.naturalWidth * img.naturalHeight > 50000000)
-      throw new Error("Choose an image smaller than 50 megapixels.");
+    if (
+      img.naturalWidth * img.naturalHeight > MAX_IMAGE_PIXELS ||
+      img.naturalWidth > MAX_IMAGE_SIDE || img.naturalHeight > MAX_IMAGE_SIDE
+    ) throw new Error("Choose an image no larger than 50 megapixels or 16,384 pixels per side.");
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = 512;
     const ctx = canvas.getContext("2d");
@@ -426,7 +431,7 @@ async function uploadAvatar(file) {
       error.message || "We couldn’t read that image. Try a different file.",
     );
   } finally {
-    URL.revokeObjectURL(url);
+    if (url) URL.revokeObjectURL(url);
   }
 }
 async function importIdentity(file) {
@@ -444,7 +449,10 @@ async function importIdentity(file) {
       typeof data.role !== "string"
     )
       throw new Error("That isn’t a supported Identity Studio identity file.");
-    state = normalizeIdentity(data);
+    const imported = normalizeIdentity(data);
+    if (data.customAvatar && !imported.customAvatar)
+      throw new Error("This identity contains an invalid or oversized avatar. Choose another identity file.");
+    state = imported;
     appearanceHistory.clear();
     creatorUI.selectedPart = -1;
     state.step = 4;

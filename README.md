@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/silentobelisk/identity-studio/releases/latest"><img src="https://img.shields.io/badge/version-2.1.0-cc3154?style=flat-square" alt="Version 2.1.0" /></a>
+  <a href="https://github.com/silentobelisk/identity-studio/releases/latest"><img src="https://img.shields.io/badge/version-2.1.1-cc3154?style=flat-square" alt="Version 2.1.1" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-151418?style=flat-square" alt="Code licensed under MIT" /></a>
   <a href="#download--get-started"><img src="https://img.shields.io/badge/Node.js-22%2B-151418?style=flat-square" alt="Requires Node.js 22 or newer" /></a>
   <a href="docs/GUIDE.md#your-data"><img src="https://img.shields.io/badge/API_key-not_needed-cc3154?style=flat-square" alt="No API key needed" /></a>
@@ -109,6 +109,7 @@ The kit supplies identity and written guidance. Workflows, tools, integrations, 
 - **[Development & hosting](docs/DEVELOPMENT.md)** — project structure, local server, and static deployment.
 - **[Contributing](CONTRIBUTING.md)** — report a bug, suggest an improvement, or make a change.
 - **[Release notes](CHANGELOG.md)** — what’s new in Identity Studio.
+- **[Security](SECURITY.md)** — data boundaries and private vulnerability reporting.
 - **[Design direction](docs/DESIGN.md)** · **[Validation notes](docs/VALIDATION.md)**
 
 <details>

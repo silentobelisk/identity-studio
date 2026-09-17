@@ -2,7 +2,7 @@
 
 ## Automated checks
 
-`npm test` checks JavaScript syntax and runs 17 regression checks covering:
+`npm test` checks JavaScript syntax and runs 26 checks covering:
 
 - Bounded identity and avatar imports, invalid inputs, required identity fields, and safe filenames.
 - Complete identity round trips, including arbitrary colors, independent eyes, body pieces, contour data, export resolution, and uploaded pictures.
@@ -12,6 +12,10 @@
 - Grouped appearance undo/redo, cancellation restoration, and expression changes that preserve body construction.
 - Transparent backgrounds and consistency between the editable design and exported SVG.
 - Tone guidance, portable ZIP integrity with system unzip, Unicode text, binary entries, and local assets.
+- Raster signature and dimension limits, hostile markup/prototype input, and canonical server path containment.
+- Local Host and method restrictions, dotfile/symlink/traversal handling, and matching static/server CSP policies.
+
+The security update also passes 10 isolated Chrome checks for CSP enforcement, escaped text, SVG/PNG and ZIP exports, inline styles, and dialog behavior. See the [security review](SECURITY-REVIEW.md) for scope and limitations.
 
 ## Browser checks
 

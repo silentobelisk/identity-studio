@@ -1,4 +1,5 @@
 import test from "node:test";
+import { PNG_DATA_URL } from "./fixtures.mjs";
 import assert from "node:assert/strict";
 import {
   normalizeAvatar,
@@ -28,10 +29,10 @@ test("new identities use editable construction, without changing older saved art
   const upload = normalizeIdentity({
     version: 1,
     collection: "characters",
-    customAvatar: "data:image/png;base64,YWJj",
+    customAvatar: PNG_DATA_URL,
   });
   assert.equal(upload.avatarMode, "upload");
-  assert.equal(upload.customAvatar, "data:image/png;base64,YWJj");
+  assert.equal(upload.customAvatar, PNG_DATA_URL);
 });
 test("unsafe and oversized avatar designs are bounded before rendering", () => {
   const d = normalizeAvatar({

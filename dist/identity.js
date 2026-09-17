@@ -5,6 +5,7 @@ import {
   renderAvatarSVG,
   describeAvatar,
 } from "./avatar.js";
+import { isSafeAvatarDataURL } from "./image-validation.js";
 
 // Kept only so first-edition identity files retain their original image.
 export const COLLECTIONS = {
@@ -119,14 +120,7 @@ export function normalizeIdentity(input = {}) {
     d.traits = [
       ...new Set(input.traits.filter((x) => TRAITS.includes(x))),
     ].slice(0, 5);
-  if (
-    typeof input.customAvatar === "string" &&
-    input.customAvatar.length < 1600000 &&
-    /^data:image\/(png|jpeg|webp);base64,[a-zA-Z0-9+/=]+$/.test(
-      input.customAvatar,
-    )
-  )
-    d.customAvatar = input.customAvatar;
+  if (isSafeAvatarDataURL(input.customAvatar)) d.customAvatar = input.customAvatar;
   d.avatarMode = ["builder", "upload", "legacy"].includes(input.avatarMode)
     ? input.avatarMode
     : d.customAvatar

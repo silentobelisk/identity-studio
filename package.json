@@ -1,6 +1,6 @@
 {
   "name": "identity-studio",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "type": "module",
   "description": "An identity studio for your next AI employee.",
@@ -11,6 +11,6 @@
     "test": "npm run check",
     "start": "node scripts/serve.mjs",
     "dev": "node scripts/serve.mjs",
-    "check": "node --check dist/app.js && node --check dist/identity.js && node --check dist/avatar.js && node --check dist/avatar-editor.js && node --test tests/*.test.mjs"
+    "check": "node --check scripts/serve.mjs && node --check dist/app.js && node --check dist/identity.js && node --check dist/image-validation.js && node --check dist/avatar.js && node --check dist/avatar-editor.js && node --test tests/*.test.mjs"
   }
 }
